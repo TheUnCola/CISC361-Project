@@ -10,10 +10,9 @@ public class Job {
 	private int rT;
 	private int numDev;
 	
-	public Job(int priority, int timeArrive, int process, int jobNum, int mem, int rT, int numDev) {
+	public Job(int timeArrive, int jobNum, int mem, int numDev, int rT, int priority){
 		this.priority = priority;
 		this.timeArrive = timeArrive;
-		this.process = process;
 		this.jobNum = jobNum;
 		this.mem = mem;
 		this.rT = rT;
