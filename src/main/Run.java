@@ -71,7 +71,15 @@ public class Run {
 	    	for(int j = 0; j < strPart.length-1; j++) {
 	    		if(j == 0) {
 	    			switch(strPart[j]) {
-	    			case "A": 
+	    			case "A":
+	    				int tempCurrentTime = Integer.parseInt(systemConfig[1]);
+	    				int tempJobNum = Integer.parseInt(systemConfig[2].substring(systemConfig[2].indexOf("=")+1));
+	    				int tempMem = Integer.parseInt(systemConfig[3].substring(systemConfig[3].indexOf("=")+1));
+	    				int tempDev = Integer.parseInt(systemConfig[4].substring(systemConfig[4].indexOf("=")+1));
+	    				int tempRT = Integer.parseInt(systemConfig[5].substring(systemConfig[5].indexOf("=")+1));
+	    				int tempPriority = Integer.parseInt(systemConfig[6].substring(systemConfig[6].indexOf("=")+1));
+	    				
+	    				Job tempJob = new Job(tempCurrentTime, tempJobNum, tempMem, tempDev, tempRT, tempPriority);
 	    				break;
 	    			case "Q":
 	    				break;
@@ -80,7 +88,7 @@ public class Run {
 	    			case "D":
 	    				break;
 	    			default:
-	    				System.out.println("Error");
+	    				System.out.println("Error.");
 	    				break;
 	    			}
 	    		}
