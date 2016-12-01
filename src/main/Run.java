@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Queue;
 
 /*
@@ -48,11 +47,11 @@ public class Run {
 	    }
 	    catch(FileNotFoundException ex) {
 	    	ex.printStackTrace();
-	        //System.out.println("Unable to open file '" + fileName + "'");                
+	        System.out.println("Unable to open file '" + fileName + "'");                
 	    }
 	    catch(IOException ex) {
 	    	ex.printStackTrace();
-	        //System.out.println("Error reading file '" + fileName + "'");
+	        System.out.println("Error reading file '" + fileName + "'");
 	    }
 	    
 	    //Step 2: Configure System (First Line of Input)
@@ -63,7 +62,7 @@ public class Run {
 	    int numDev = Integer.parseInt(systemConfig[3].substring(systemConfig[3].indexOf("=")+1));
 	    int qTime = Integer.parseInt(systemConfig[4].substring(systemConfig[4].indexOf("=")+1));
 	    
-	    System sys = new System(totMem, numDev, numDev, totMem, qTime, currentTime);
+	    Sys sys = new Sys(totMem, numDev, numDev, totMem, qTime, currentTime);
 	    
 	    //Step 3: Loop over each line remaining
 	    //Loop on time and each line

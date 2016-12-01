@@ -1,6 +1,6 @@
 package main;
 
-public class System {
+public class Sys {
 	private int totMem;
 	private int numDev;
 	private int aDev;
@@ -8,7 +8,7 @@ public class System {
 	private int qTime;
 	private int currTime;
 	
-	public System(int totMem, int numDev, int aDev, int aMem, int qTime, int currTime) {
+	public Sys(int totMem, int numDev, int aDev, int aMem, int qTime, int currTime) {
 		this.totMem = totMem;
 		this.numDev = numDev;
 		this.aDev = aDev;
