@@ -9,6 +9,7 @@ public class Job {
 	private int mem;
 	private int rT;
 	private int numDev;
+	private boolean isRunning;
 	
 	public Job(int timeArrive, int jobNum, int mem, int numDev, int rT, int priority){
 		this.priority = priority;
@@ -17,6 +18,15 @@ public class Job {
 		this.mem = mem;
 		this.rT = rT;
 		this.numDev = numDev;
+		this.isRunning = false;
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void setRunning(boolean isRunning) {
+		this.isRunning = isRunning;
 	}
 
 	public int getProcess() {
@@ -31,8 +41,12 @@ public class Job {
 		return numDev;
 	}
 
-	public void setNumDev(int numDev) {
-		this.numDev = numDev;
+	public void incNumDev(int numDev) {
+		this.numDev += numDev;
+	}
+	
+	public void decNumDev(int numDev) {
+		this.numDev -= numDev;
 	}
 
 	public int getPriority() {
@@ -53,6 +67,10 @@ public class Job {
 
 	public int getrT() {
 		return rT;
+	}
+	
+	public void decrT() {
+		this.rT--;
 	}
 
 }

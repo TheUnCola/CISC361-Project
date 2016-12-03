@@ -1,5 +1,8 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.Queue;
+
 public class Sys {
 	private int totMem;
 	private int numDev;
@@ -8,11 +11,51 @@ public class Sys {
 	private int qTime;
 	private int currTime;
 	
-	public Sys(int totMem, int numDev, int aDev, int aMem, int qTime, int currTime) {
+	// Hold Queues
+	private Queue<Job> hSJF; // Highest Priority
+	private Queue<Job> hFIFO;
+
+	// Ready Queue
+	private Queue<Job> rQueue;
+
+	// Wait Queue
+	private Queue<Job> wQueue;
+
+	// Complete Queue
+	private Queue<Job> cQueue;
+	
+	// Total Job List (used for easily referencing jobs)
+	private ArrayList<Job> allJobs = new ArrayList<Job>();
+	
+	public Queue<Job> gethSJF() {
+		return hSJF;
+	}
+
+	public Queue<Job> gethFIFO() {
+		return hFIFO;
+	}
+
+	public Queue<Job> getrQueue() {
+		return rQueue;
+	}
+
+	public Queue<Job> getwQueue() {
+		return wQueue;
+	}
+
+	public Queue<Job> getcQueue() {
+		return cQueue;
+	}
+
+	public ArrayList<Job> getAllJobs() {
+		return allJobs;
+	}
+
+	public Sys(int totMem, int numDev, int qTime, int currTime) {
 		this.totMem = totMem;
 		this.numDev = numDev;
-		this.aDev = aDev;
-		this.aMem = aMem;
+		this.aDev = numDev;
+		this.aMem = totMem;
 		this.qTime = qTime;
 		this.currTime = currTime;
 	}
@@ -34,16 +77,24 @@ public class Sys {
 		return aDev;
 	}
 
-	public void setaDev(int aDev) {
-		this.aDev = aDev;
+	public void incaDev(int aDev) {
+		this.aDev += aDev;
+	}
+	
+	public void decaDev(int aDev) {
+		this.aDev -= aDev;
 	}
 
 	public int getaMem() {
 		return aMem;
 	}
 
-	public void setaMem(int aMem) {
-		this.aMem = aMem;
+	public void incaMem(int aMem) {
+		this.aMem += aMem;
+	}
+	
+	public void decaMem(int aMem) {
+		this.aMem -= aMem;
 	}
 
 	public int getCurrTime() {
