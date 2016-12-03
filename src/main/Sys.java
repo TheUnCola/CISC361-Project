@@ -1,5 +1,6 @@
 package main;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
 
@@ -12,17 +13,17 @@ public class Sys {
 	private int currTime;
 	
 	// Hold Queues
-	private Queue<Job> hSJF; // Highest Priority
-	private Queue<Job> hFIFO;
+	private Queue<Job> hSJF = new ArrayDeque<Job>(); // Highest Priority
+	private Queue<Job> hFIFO = new ArrayDeque<Job>();
 
 	// Ready Queue
-	private Queue<Job> rQueue;
+	private Queue<Job> rQueue = new ArrayDeque<Job>();
 
 	// Wait Queue
-	private Queue<Job> wQueue;
+	private Queue<Job> wQueue = new ArrayDeque<Job>();
 
 	// Complete Queue
-	private Queue<Job> cQueue;
+	private Queue<Job> cQueue = new ArrayDeque<Job>();
 	
 	// Total Job List (used for easily referencing jobs)
 	private ArrayList<Job> allJobs = new ArrayList<Job>();
