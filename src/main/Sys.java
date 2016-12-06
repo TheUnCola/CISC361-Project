@@ -11,46 +11,23 @@ public class Sys {
 	private int aMem;
 	private int qTime;
 	private int currTime;
+	private int qCount;
 	
 	// Hold Queues
-	private Queue<Job> hSJF = new ArrayDeque<Job>(); // Highest Priority
-	private Queue<Job> hFIFO = new ArrayDeque<Job>();
+	private ArrayDeque<Job> hSJF; // Highest Priority
+	private ArrayDeque<Job> hFIFO;
 
 	// Ready Queue
-	private Queue<Job> rQueue = new ArrayDeque<Job>();
+	private ArrayDeque<Job> rQueue;
 
 	// Wait Queue
-	private Queue<Job> wQueue = new ArrayDeque<Job>();
+	private ArrayDeque<Job> wQueue;
 
 	// Complete Queue
-	private Queue<Job> cQueue = new ArrayDeque<Job>();
+	private ArrayDeque<Job> cQueue;
 	
 	// Total Job List (used for easily referencing jobs)
-	private ArrayList<Job> allJobs = new ArrayList<Job>();
-	
-	public Queue<Job> gethSJF() {
-		return hSJF;
-	}
-
-	public Queue<Job> gethFIFO() {
-		return hFIFO;
-	}
-
-	public Queue<Job> getrQueue() {
-		return rQueue;
-	}
-
-	public Queue<Job> getwQueue() {
-		return wQueue;
-	}
-
-	public Queue<Job> getcQueue() {
-		return cQueue;
-	}
-
-	public ArrayList<Job> getAllJobs() {
-		return allJobs;
-	}
+	private ArrayList<Job> allJobs;
 
 	public Sys(int totMem, int numDev, int qTime, int currTime) {
 		this.totMem = totMem;
@@ -59,6 +36,13 @@ public class Sys {
 		this.aMem = totMem;
 		this.qTime = qTime;
 		this.currTime = currTime;
+		this.qCount = 0;
+		hSJF = new ArrayDeque<Job>();
+		hFIFO = new ArrayDeque<Job>();
+		rQueue = new ArrayDeque<Job>();
+		wQueue = new ArrayDeque<Job>();
+		cQueue = new ArrayDeque<Job>();
+		allJobs = new ArrayList<Job>();
 	}
 
 	// No setters for 3 of these since they're initialized and shouldn't be changed
@@ -102,7 +86,46 @@ public class Sys {
 		return currTime;
 	}
 
-	public void setCurrTime(int currTime) {
-		this.currTime = currTime;
+	public void incCurrTime() {
+		this.currTime++;
+	}
+	
+	public ArrayDeque<Job> gethSJF() {
+		return hSJF;
+	}
+
+	public ArrayDeque<Job> gethFIFO() {
+		return hFIFO;
+	}
+
+	public ArrayDeque<Job> getrQueue() {
+		return rQueue;
+	}
+
+	public ArrayDeque<Job> getwQueue() {
+		return wQueue;
+	}
+
+	public ArrayDeque<Job> getcQueue() {
+		return cQueue;
+	}
+
+	public ArrayList<Job> getAllJobs() {
+		return allJobs;
+	}
+	
+	public int getqCount() {
+		return this.qCount;
+	}
+	
+	public void incqCount() {
+		if(qCount <= qTime)
+			this.qCount++;
+		else
+			System.out.println("qCount Error!");
+	}
+	
+	public void resetqCount() {
+		this.qCount = 0;
 	}
 }
