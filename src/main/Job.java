@@ -37,7 +37,6 @@ public class Job {
 		if (!sys.getwQueue().isEmpty() && sys.getwQueue().getFirst().getNumDev() <= sys.getaDev()) {
 			sys.getrQueue().addLast(sys.getwQueue().getFirst());
 			sys.getwQueue().removeFirst();
-			System.out.println("t");
 		}
 
 		// Check Hold Queues and add to Ready Queues if possible
@@ -51,7 +50,7 @@ public class Job {
 				sys.decaMem(sys.gethSJF().getFirst().getMem());
 				printOutput("M" + sys.gethSJF().getFirst().getJobNum(), sys.getCurrTime() + ")",
 						sys.gethSJF().getFirst().getNumDev(), sys.gethSJF().getFirst().getMem(),
-						sys.gethSJF().getFirst().getrT(), "->rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
+						sys.gethSJF().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
 						sys.getaDev(), "-");
 				// Remove from Hold Queue
 				sys.gethSJF().removeFirst();
@@ -64,9 +63,9 @@ public class Job {
 				// Decrease available memory and devices
 				sys.decaDev(sys.gethFIFO().getFirst().getNumDev());
 				sys.decaMem(sys.gethFIFO().getFirst().getMem());
-				printOutput("M" + sys.gethFIFO().getFirst().getJobNum(), sys.getCurrTime() + ")",
+				printOutput("M" + sys.gethFIFO().getFirst().getJobNum(), sys.getCurrTime()+"",
 						sys.gethFIFO().getFirst().getNumDev(), sys.gethFIFO().getFirst().getMem(),
-						sys.gethFIFO().getFirst().getrT(), "->rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
+						sys.gethFIFO().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
 						sys.getaDev(), "-");
 				// Remove from Hold Queue
 				sys.gethFIFO().removeFirst();
@@ -78,14 +77,18 @@ public class Job {
 			sys.setComplete(true);
 			return;
 		}
-		if (!sys.gethSJF().isEmpty())
-			System.out.println("hQ1(0) = J" + sys.gethSJF().getFirst().getJobNum() + " dev=" + sys.gethSJF().getFirst().getNumDev());
+		/*if (!sys.gethSJF().isEmpty())
+			System.out.println("hQ1(0) = J" + sys.gethSJF().getFirst().getJobNum() + " dev="
+					+ sys.gethSJF().getFirst().getNumDev());
 		if (!sys.gethFIFO().isEmpty())
-			System.out.println("hQ2(0) = J" + sys.gethFIFO().getFirst().getJobNum() + " dev=" + sys.gethFIFO().getFirst().getNumDev());
+			System.out.println("hQ2(0) = J" + sys.gethFIFO().getFirst().getJobNum() + " dev="
+					+ sys.gethFIFO().getFirst().getNumDev());
 		if (!sys.getrQueue().isEmpty())
-			System.out.println("rQ(0) = J" + sys.getrQueue().getFirst().getJobNum() + " dev=" + sys.getrQueue().getFirst().getNumDev());
+			System.out.println("rQ(0) = J" + sys.getrQueue().getFirst().getJobNum() + " dev="
+					+ sys.getrQueue().getFirst().getNumDev());
 		if (!sys.getwQueue().isEmpty())
-			System.out.println("wQ(0) = J" + sys.getwQueue().getFirst().getJobNum() + " dev=" + sys.getwQueue().getFirst().getNumDev());
+			System.out.println("wQ(0) = J" + sys.getwQueue().getFirst().getJobNum() + " dev="
+					+ sys.getwQueue().getFirst().getNumDev());*/
 
 		Job runningJob = sys.getrQueue().getFirst();
 		if (sys.getqCount() >= 4) {
@@ -106,13 +109,13 @@ public class Job {
 			sys.incqCount();
 			printOutput("J" + runningJob.getJobNum(), sys.getCurrTime() + "-" + (sys.getCurrTime() + 1),
 					runningJob.getNumDev(), runningJob.getMem(), runningJob.getrT(), "R", sys.getaMem(), sys.getaDev(),
-					" " + sys.getqCount());
+					""+sys.getqCount());
 		}
 		runningJob.setRunning(false);
 
 		// Job is finished
 		if (runningJob.getrT() == 0) {
-			System.out.println("Job " + runningJob.getJobNum() + " has completed.");
+			//System.out.println("Job " + runningJob.getJobNum() + " has completed.");
 			// Add to Complete Queue
 			sys.getcQueue().add(runningJob);
 			// Increase system dev and mem
@@ -120,8 +123,8 @@ public class Job {
 			sys.incaMem(runningJob.getMem());
 			// Reset Quantum
 			sys.resetqCount();
-			printOutput("Test", sys.getCurrTime() + "-" + (sys.getCurrTime() + 1), runningJob.getNumDev(),
-					runningJob.getMem(), runningJob.getrT(), "R", sys.getaMem(), sys.getaDev(), " " + sys.getqCount());
+			/*printOutput("Test", sys.getCurrTime() + "-" + (sys.getCurrTime() + 1), runningJob.getNumDev(),
+					runningJob.getMem(), runningJob.getrT(), "R", sys.getaMem(), sys.getaDev(), ""+sys.getqCount());*/
 			// Remove from ready queue
 			sys.getrQueue().removeFirst();
 		}
@@ -270,11 +273,10 @@ public class Job {
 		}
 	}
 
-	public void printOutput(String job, String time, int dev, int mem, int rT, String pos, int aMem, int aDev,
-			String Qt) {
-		System.out.format("| %5s | %5s | %5s | %5s | %5s | %6s | %5s | %5s | %5s | \n", StringUtils.center(job, job.length()), time, dev, mem, rT, pos,
-				aMem, aDev, Qt);
-		System.out.println("+-------+-------+-------+-------+-------+--------+-------+-------+-------+");
+	public void printOutput(String job, String time, int dev, int mem, int rT, String pos, int aMem, int aDev, String Qt) {
+		System.out.format("| %4s | %5s | %3s | %2s | %2s | %6s | %4s | %4s | %2s | \n",
+				StringUtils.center(job, 4), StringUtils.center(time,5), StringUtils.center(Integer.toString(dev),3), StringUtils.center(Integer.toString(mem),3), rT, StringUtils.center(pos,6), aMem, StringUtils.center(Integer.toString(aDev),3), Qt);
+		System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
 	}
 
 	public boolean isRunning() {
