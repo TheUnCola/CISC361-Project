@@ -25,6 +25,7 @@ public class Run {
 		Sys sys = new Sys(totMem, numDev, qTime, currentTime);
 		System.out.println("System created with Mem=" + totMem + ", Dev=" + numDev + ", QTime=" + qTime + ", CurrentTime=" + currentTime);
 		
+		System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
 		System.out.format("| %4s | %5s | %1s | %3s | %2s | %6s | %4s | %4s | %2s | \n", "Job", "Time", "Dev", "Mem", "rT", StringUtils.center("Pos",6), "aMem", "aDev", "Qt");
 		System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
 		

@@ -48,7 +48,7 @@ public class Job {
 				// Decrease available memory and devices
 				sys.decaDev(sys.gethSJF().getFirst().getNumDev());
 				sys.decaMem(sys.gethSJF().getFirst().getMem());
-				printOutput("M" + sys.gethSJF().getFirst().getJobNum(), sys.getCurrTime() + ")",
+				printOutput("M" + sys.gethSJF().getFirst().getJobNum(), sys.getCurrTime()+"",
 						sys.gethSJF().getFirst().getNumDev(), sys.gethSJF().getFirst().getMem(),
 						sys.gethSJF().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
 						sys.getaDev(), "-");
