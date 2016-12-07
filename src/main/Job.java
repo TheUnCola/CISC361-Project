@@ -1,5 +1,7 @@
 package main;
 
+import java.util.ArrayDeque;
+
 import org.apache.commons.lang3.StringUtils;
 
 public class Job {
@@ -42,6 +44,8 @@ public class Job {
 		if (!sys.getwQueue().isEmpty() && sys.getwQueue().getFirst().getNumDev() <= sys.getaDev()) {
 			sys.getrQueue().addLast(sys.getwQueue().getFirst());
 			sys.decaDev(sys.getwQueue().getFirst().getNumDev());
+			printOutput("M" + sys.getwQueue().getFirst().getJobNum(), sys.getCurrTime()+"", sys.getwQueue().getFirst().getNumDev(), sys.getwQueue().getFirst().getMem(),
+					sys.getwQueue().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys); 
 			sys.getwQueue().removeFirst();
 		}
 
@@ -57,7 +61,7 @@ public class Job {
 				printOutput("M" + sys.gethSJF().getFirst().getJobNum(), sys.getCurrTime()+"",
 						sys.gethSJF().getFirst().getNumDev(), sys.gethSJF().getFirst().getMem(),
 						sys.gethSJF().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
-						sys.getaDev(), "-");
+						sys.getaDev(), "-", sys);
 				// Remove from Hold Queue
 				sys.gethSJF().removeFirst();
 			}
@@ -72,7 +76,7 @@ public class Job {
 				printOutput("M" + sys.gethFIFO().getFirst().getJobNum(), sys.getCurrTime()+"",
 						sys.gethFIFO().getFirst().getNumDev(), sys.gethFIFO().getFirst().getMem(),
 						sys.gethFIFO().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
-						sys.getaDev(), "-");
+						sys.getaDev(), "-", sys);
 				// Remove from Hold Queue
 				sys.gethFIFO().removeFirst();
 			}
@@ -113,7 +117,7 @@ public class Job {
 			sys.incqCount();
 			printOutput("J" + runningJob.getJobNum(), sys.getCurrTime() + "-" + (sys.getCurrTime() + 1),
 					runningJob.getNumDev(), runningJob.getMem(), runningJob.getrT(), "R", sys.getaMem(), sys.getaDev(),
-					""+sys.getqCount());
+					""+sys.getqCount(), sys);
 		}
 		runningJob.setRunning(false);
 
@@ -128,6 +132,7 @@ public class Job {
 			sys.resetqCount();
 			// Remove from ready queue
 			sys.getrQueue().removeFirst();
+			printOutput("M" + runningJob.getJobNum(), sys.getCurrTime()+"", runningJob.getNumDev(), runningJob.getMem(), runningJob.getrT(), "cQ(" + (sys.getcQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
 		}
 	}
 
@@ -166,12 +171,12 @@ public class Job {
 				sys.gethSJF().add(tempJob);
 				printOutput("I" + tempJob.getJobNum(), Integer.toString(sys.getCurrTime()), tempJob.getNumDev(),
 						tempJob.getMem(), tempJob.getrT(), "hQ1(" + (sys.gethSJF().size() - 1) + ")", sys.getaMem(),
-						sys.getaDev(), "-");
+						sys.getaDev(), "-", sys);
 			} else {
 				sys.gethFIFO().add(tempJob);
 				printOutput("I" + tempJob.getJobNum(), Integer.toString(sys.getCurrTime()), tempJob.getNumDev(),
 						tempJob.getMem(), tempJob.getrT(), "hQ2(" + (sys.gethFIFO().size() - 1) + ")", sys.getaMem(),
-						sys.getaDev(), "-");
+						sys.getaDev(), "-", sys);
 			}
 			break;
 
@@ -183,7 +188,7 @@ public class Job {
 				// Reject request since there aren't enough total devices
 				printOutput("R" + tempJobNum, sys.getCurrTime()+"", tempDev,
 						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-						"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-");
+						"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
 				System.out.println("There aren't enough total devices on the system to support this request.");
 			} else if (sys.gethSJF().contains(sys.getAllJobs().get(tempJobNum - 1))
 					|| sys.gethFIFO().contains(sys.getAllJobs().get(tempJobNum - 1))) {
@@ -207,7 +212,7 @@ public class Job {
 				}
 				printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
 						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-						tempPos, sys.getaMem(), sys.getaDev(), "-");
+						tempPos, sys.getaMem(), sys.getaDev(), "-", sys);
 			} else if (sys.getrQueue().contains(sys.getAllJobs().get(tempJobNum - 1))) {
 				// Remove devices from system if available or put job in wait queue
 				if (tempDev <= sys.getaDev()) {
@@ -221,7 +226,7 @@ public class Job {
 					}
 					printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-							tempPos, sys.getaMem(), sys.getaDev(), "-");
+							tempPos, sys.getaMem(), sys.getaDev(), "-", sys);
 				} else if(sys.getAllJobs().get(tempJobNum - 1).getNumDev() + tempDev <= sys.getNumDev()) {
 					// Add back mem/dev before increasing job amount
 					sys.incaDev(sys.getAllJobs().get(tempJobNum - 1).getNumDev());
@@ -232,7 +237,7 @@ public class Job {
 					sys.getrQueue().remove(sys.getAllJobs().get(tempJobNum - 1));
 					printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-							"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-");
+							"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
 				}
 				//Double check in this part for avoiding errors
 			}
@@ -264,7 +269,7 @@ public class Job {
 				}
 				printOutput("L" + tempJobNum, sys.getCurrTime() + "", tempDev,
 						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-						tempPos, sys.getaMem(), sys.getaDev(), "-");
+						tempPos, sys.getaMem(), sys.getaDev(), "-", sys);
 			} else if (sys.getrQueue().contains(sys.getAllJobs().get(tempJobNum - 1))) {
 				// Add back devices to system and decrease from job (if running)
 				sys.incaDev(tempDev);
@@ -277,10 +282,14 @@ public class Job {
 				}
 				printOutput("L" + tempJobNum, sys.getCurrTime() + "", tempDev,
 						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-						tempPos, sys.getaMem(), sys.getaDev(), "-");
+						tempPos, sys.getaMem(), sys.getaDev(), "-", sys);
 			}
 			break;
 		case "D":
+			for(Job j : sys.getAllJobs()) {
+				System.out.println("J" + j.getJobNum() + " " + findJob(j, sys));
+			}
+			sys.setComplete(true);
 			break;
 		default:
 			System.out.println("Error.");
@@ -288,10 +297,57 @@ public class Job {
 		}
 	}
 
-	public void printOutput(String job, String time, int dev, int mem, int rT, String pos, int aMem, int aDev, String Qt) {
-		System.out.format("| %4s | %5s | %3s | %2s | %2s | %6s | %4s | %4s | %2s | \n",
+	public void printOutput(String job, String time, int dev, int mem, int rT, String pos, int aMem, int aDev, String Qt, Sys sys) {
+		System.out.format("| %4s | %5s | %3s | %2s | %2s | %6s | %4s | %4s | %2s | ",
 				StringUtils.center(job, 4), StringUtils.center(time,5), StringUtils.center(Integer.toString(dev),3), StringUtils.center(Integer.toString(mem),3), rT, StringUtils.center(pos,6), aMem, StringUtils.center(Integer.toString(aDev),3), Qt);
+		System.out.println("hQ1:" + printQueue(sys.gethSJF()) + " hQ2:" + printQueue(sys.gethFIFO()) + " rQ:" + printQueue(sys.getrQueue()) + " wQ:" + printQueue(sys.getwQueue()) + " cQ:" + printQueue(sys.getcQueue()));
 		System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
+	}
+	
+	public String printQueue(ArrayDeque<Job> q) {
+		String tempString = "";
+		for(Job j : q) {
+			tempString = tempString.concat("J" + j.jobNum + ",");
+		}
+		return tempString;
+	}
+	
+	public String findJob(Job j, Sys sys) {
+		if(sys.gethSJF().contains(j)) {
+			int x = 0;
+			for(Job job : sys.gethSJF()) {
+				if(job.equals(j)) return "hQ1(" + x + ")";
+				x++;
+			}
+		} else if(sys.gethFIFO().contains(j)) {
+			int x = 0;
+			for(Job job : sys.gethFIFO()) {
+				if(job.equals(j)) return "hQ2(" + x + ")";
+				x++;
+			}
+		} else if(sys.getrQueue().contains(j)) {
+			int x = 0;
+			for(Job job : sys.getrQueue()) {
+				if(job.equals(j)) return "rQ(" + x + ")";
+				x++;
+			}
+		} else if(sys.getwQueue().contains(j)) {
+			int x = 0;
+			for(Job job : sys.getwQueue()) {
+				if(job.equals(j)) return "wQ(" + x + ")";
+				x++;
+			}
+		} else if(sys.getcQueue().contains(j)) {
+			int x = 0;
+			for(Job job : sys.getcQueue()) {
+				if(job.equals(j)) return "cQ(" + x + ")";
+				x++;
+			}
+		} else {
+			System.out.println("Job could not be found.");
+			
+		}
+		return "";
 	}
 
 	public boolean isRunning() {

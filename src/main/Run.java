@@ -56,12 +56,12 @@ public class Run {
 			}*/
 			sys.incCurrTime();
 
-			if (j.getNextJobType(currentLine + 1, fi).equals("D")
+			/*if (j.getNextJobType(currentLine + 1, fi).equals("D")
 					&& j.getNextJobTime(currentLine + 1, fi) <= sys.getCurrTime() && sys.gethSJF().isEmpty()
 					&& sys.gethFIFO().isEmpty() && sys.getwQueue().isEmpty() && sys.getrQueue().isEmpty()) {
 				System.out.println(sys.getCurrTime());
 				sys.setComplete(true);
-			}
+			}*/
 		}
 		System.out.println("System has completed all jobs.");
 	}
