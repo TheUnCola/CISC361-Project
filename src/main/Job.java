@@ -31,6 +31,11 @@ public class Job {
 		String[] strPart = fi.getLines().get(nextLine).split(" ");
 		return Integer.parseInt(strPart[1]);
 	}
+	
+	public String getNextJobType(int nextLine, FileInput fi) {
+		String[] strPart = fi.getLines().get(nextLine).split(" ");
+		return strPart[0];
+	}
 
 	public void runJob(Sys sys) {
 		// Check Wait Queue and remove entry if enough aDev
@@ -71,12 +76,7 @@ public class Job {
 				sys.gethFIFO().removeFirst();
 			}
 		}
-		// If nothing else remains then the program is done!
-		if (sys.gethSJF().isEmpty() && sys.gethFIFO().isEmpty() && sys.getwQueue().isEmpty()
-				&& sys.getrQueue().isEmpty()) {
-			sys.setComplete(true);
-			return;
-		}
+		
 		/*if (!sys.gethSJF().isEmpty())
 			System.out.println("hQ1(0) = J" + sys.gethSJF().getFirst().getJobNum() + " dev="
 					+ sys.gethSJF().getFirst().getNumDev());
@@ -90,6 +90,9 @@ public class Job {
 			System.out.println("wQ(0) = J" + sys.getwQueue().getFirst().getJobNum() + " dev="
 					+ sys.getwQueue().getFirst().getNumDev());*/
 
+		//If nothing in Ready Queue, continue on loop until something is or done
+		if(sys.getrQueue().isEmpty()) return;
+		
 		Job runningJob = sys.getrQueue().getFirst();
 		if (sys.getqCount() >= 4) {
 			// Rotate jobs (Round Robin)
@@ -115,7 +118,6 @@ public class Job {
 
 		// Job is finished
 		if (runningJob.getrT() == 0) {
-			//System.out.println("Job " + runningJob.getJobNum() + " has completed.");
 			// Add to Complete Queue
 			sys.getcQueue().add(runningJob);
 			// Increase system dev and mem
@@ -123,8 +125,6 @@ public class Job {
 			sys.incaMem(runningJob.getMem());
 			// Reset Quantum
 			sys.resetqCount();
-			/*printOutput("Test", sys.getCurrTime() + "-" + (sys.getCurrTime() + 1), runningJob.getNumDev(),
-					runningJob.getMem(), runningJob.getrT(), "R", sys.getaMem(), sys.getaDev(), ""+sys.getqCount());*/
 			// Remove from ready queue
 			sys.getrQueue().removeFirst();
 		}
@@ -149,7 +149,13 @@ public class Job {
 			tempDev = Integer.parseInt(strPart[4].substring(strPart[4].indexOf("=") + 1));
 			tempRT = Integer.parseInt(strPart[5].substring(strPart[5].indexOf("=") + 1));
 			tempPriority = Integer.parseInt(strPart[6].substring(strPart[6].indexOf("=") + 1));
-
+			
+			// If job takes more mem/dev than the total system has, reject it
+			if(tempMem > sys.getTotMem() || tempDev > sys.getNumDev()) {
+				System.out.println("Job " + tempJobNum + " too large so it is rejected.");
+				break;
+			}
+			
 			// Create Job (and add to total list)
 			Job tempJob = new Job(tempCurrentTime, tempJobNum, tempMem, tempDev, tempRT, tempPriority);
 			sys.getAllJobs().add(tempJob);
@@ -172,7 +178,13 @@ public class Job {
 		case "Q":
 			tempJobNum = Integer.parseInt(strPart[2].substring(strPart[2].indexOf("=") + 1));
 			tempDev = Integer.parseInt(strPart[3].substring(strPart[3].indexOf("=") + 1));
-			if (sys.gethSJF().contains(sys.getAllJobs().get(tempJobNum - 1))
+			if(sys.getAllJobs().get(tempJobNum - 1).getNumDev() + tempDev > sys.getNumDev()) {
+				// Reject request since there aren't enough total devices
+				printOutput("R" + tempJobNum, sys.getCurrTime()+"", tempDev,
+						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
+						"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-");
+				System.out.println("There aren't enough total devices on the system to support this request.");
+			} else if (sys.gethSJF().contains(sys.getAllJobs().get(tempJobNum - 1))
 					|| sys.gethFIFO().contains(sys.getAllJobs().get(tempJobNum - 1))) {
 				// Increase required # of devices for that job
 				sys.getAllJobs().get(tempJobNum - 1).incNumDev(tempDev);
@@ -196,8 +208,7 @@ public class Job {
 						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
 						tempPos, sys.getaMem(), sys.getaDev(), "-");
 			} else if (sys.getrQueue().contains(sys.getAllJobs().get(tempJobNum - 1))) {
-				// Remove devices from system if available or put job in wait
-				// queue
+				// Remove devices from system if available or put job in wait queue
 				if (tempDev <= sys.getaDev()) {
 					sys.decaDev(tempDev);
 					sys.getAllJobs().get(tempJobNum - 1).incNumDev(tempDev);
@@ -210,9 +221,8 @@ public class Job {
 					printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
 							tempPos, sys.getaMem(), sys.getaDev(), "-");
-				} else {
-					// Add to Waiting Queue and remove from Ready Queue if not
-					// enough aDev
+				} else if(tempDev <= sys.getNumDev()) {
+					// Add to Waiting Queue and remove from Ready Queue if not enough aDev
 					sys.getAllJobs().get(tempJobNum - 1).incNumDev(tempDev);
 					sys.getwQueue().addLast(sys.getAllJobs().get(tempJobNum - 1));
 					sys.getrQueue().remove(sys.getAllJobs().get(tempJobNum - 1));
