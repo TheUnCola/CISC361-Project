@@ -29,7 +29,7 @@ public class Run {
 		// Step 3: Loop until all jobs have completed
 		int currentLine = 0;
 		Job j = new Job();boolean firstJob = false;
-		while (sys.getCurrTime() < 100) {
+		while (!sys.isComplete()) {
 			
 			//If time == arrival of next line pause and initialize job
 			if(j.getNextJobTime(currentLine+1, fi) == sys.getCurrTime()) {
@@ -41,7 +41,6 @@ public class Run {
 			//Execute
 			if(firstJob)
 				j.runJob(sys);
-			else
 				
 			
 			try {
@@ -51,5 +50,6 @@ public class Run {
 			}
 			sys.incCurrTime();
 		}
+		System.out.println("System has completed all jobs.");
 	}
 }

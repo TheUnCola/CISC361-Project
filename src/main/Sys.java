@@ -2,7 +2,6 @@ package main;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Queue;
 
 public class Sys {
 	private int totMem;
@@ -12,6 +11,7 @@ public class Sys {
 	private int qTime;
 	private int currTime;
 	private int qCount;
+	private boolean complete;
 	
 	// Hold Queues
 	private ArrayDeque<Job> hSJF; // Highest Priority
@@ -37,6 +37,7 @@ public class Sys {
 		this.qTime = qTime;
 		this.currTime = currTime;
 		this.qCount = 0;
+		this.complete = false;
 		hSJF = new ArrayDeque<Job>();
 		hFIFO = new ArrayDeque<Job>();
 		rQueue = new ArrayDeque<Job>();
@@ -127,5 +128,13 @@ public class Sys {
 	
 	public void resetqCount() {
 		this.qCount = 0;
+	}
+
+	public boolean isComplete() {
+		return complete;
+	}
+
+	public void setComplete(boolean complete) {
+		this.complete = complete;
 	}
 }
