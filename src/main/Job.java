@@ -41,6 +41,7 @@ public class Job {
 		// Check Wait Queue and remove entry if enough aDev
 		if (!sys.getwQueue().isEmpty() && sys.getwQueue().getFirst().getNumDev() <= sys.getaDev()) {
 			sys.getrQueue().addLast(sys.getwQueue().getFirst());
+			sys.decaDev(sys.getwQueue().getFirst().getNumDev());
 			sys.getwQueue().removeFirst();
 		}
 
@@ -94,7 +95,7 @@ public class Job {
 		if(sys.getrQueue().isEmpty()) return;
 		
 		Job runningJob = sys.getrQueue().getFirst();
-		if (sys.getqCount() >= 4) {
+		if (sys.getqCount() >= sys.getqTime()) {
 			// Rotate jobs (Round Robin)
 			if (runningJob.getrT() > 0) {
 				sys.getrQueue().addLast(runningJob); // Add to back
@@ -221,7 +222,10 @@ public class Job {
 					printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
 							tempPos, sys.getaMem(), sys.getaDev(), "-");
-				} else if(tempDev <= sys.getNumDev()) {
+				} else if(sys.getAllJobs().get(tempJobNum - 1).getNumDev() + tempDev <= sys.getNumDev()) {
+					// Add back mem/dev before increasing job amount
+					sys.incaDev(sys.getAllJobs().get(tempJobNum - 1).getNumDev());
+					sys.incaMem(sys.getAllJobs().get(tempJobNum - 1).getMem());
 					// Add to Waiting Queue and remove from Ready Queue if not enough aDev
 					sys.getAllJobs().get(tempJobNum - 1).incNumDev(tempDev);
 					sys.getwQueue().addLast(sys.getAllJobs().get(tempJobNum - 1));
@@ -230,6 +234,7 @@ public class Job {
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
 							"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-");
 				}
+				//Double check in this part for avoiding errors
 			}
 			break;
 		// Release of devices
