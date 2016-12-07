@@ -1,13 +1,5 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-
 /*
  * Matt Leung
  * Steven Sell
@@ -29,9 +21,11 @@ public class Run {
 		int qTime = Integer.parseInt(systemConfig[4].substring(systemConfig[4].indexOf("=") + 1));
 
 		Sys sys = new Sys(totMem, numDev, qTime, currentTime);
-		System.out.println("System created with Mem=" + totMem + ", Dev=" + numDev + ", QTime=" + qTime
-				+ ", CurrentTime=" + currentTime);
-
+		System.out.println("System created with Mem=" + totMem + ", Dev=" + numDev + ", QTime=" + qTime + ", CurrentTime=" + currentTime);
+		
+		System.out.format("| %5s | %5s | %5s | %5s | %5s | %6s | %5s | %5s | %5s | \n", "Job", "Time", "Dev", "Mem", "rT", "Pos", "aMem", "aDev", "Qt");
+		System.out.println("+-------+-------+-------+-------+-------+--------+-------+-------+-------+");
+		
 		// Step 3: Loop until all jobs have completed
 		int currentLine = 0;
 		Job j = new Job();boolean firstJob = false;
@@ -47,6 +41,8 @@ public class Run {
 			//Execute
 			if(firstJob)
 				j.runJob(sys);
+			else
+				
 			
 			try {
 				Thread.sleep(100);
@@ -54,12 +50,6 @@ public class Run {
 				e.printStackTrace();
 			}
 			sys.incCurrTime();
-			System.out.println("System Mem=" + sys.getaMem() + ", Dev=" + sys.getaDev() + ", QTime=" + sys.getqTime()
-					+ ", CurrentTime=" + sys.getCurrTime());
 		}
 	}
-	
-	
-	
-	
 }
