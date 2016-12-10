@@ -283,10 +283,10 @@ public class Job {
 			//End Execution at time 9999 regardless of Job states
 			if(sys.getCurrTime() == 9999) {
 				System.out.println("\nSystem has reached its end state");
-				System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
+				System.out.println("+------+--------+----+-----+-----+");
 				System.out.format("| %4s | %6s | %2s | %3s | %3s | \n", "Job", StringUtils.center("Pos", 6), "rT",
 						"TT", "WTT");
-				System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
+				System.out.println("+------+--------+----+-----+-----+");
 				for(Job j : sys.getAllJobs()) {
 					if(findJob(j,sys).equals("rQ(0)"))
 						tempPos = "R";
@@ -295,21 +295,23 @@ public class Job {
 					int tempWTT = (j.getTimeComplete()-j.getTimeArrive());
 					if(j.getrT() > 0)
 						tempWTT = (j.getTimeComplete()-j.getTimeArrive())/j.getrT();
-					System.out.format("| %4s | %6s | %2s | %3s | %3s | \n", "Job", "J"+j.getJobNum(),tempPos,j.getrT(),j.getTimeComplete()-j.getTimeArrive(),tempWTT);
+					System.out.format("| %4s | %6s | %2s | %3s | %3s | \n", "J"+j.getJobNum(),tempPos,j.getrT(),j.getTimeComplete()-j.getTimeArrive(),tempWTT);
+					System.out.println("+------+--------+----+-----+-----+");
 				}
 				sys.setComplete(true);
 			} else {
 				//Prints Jobs, Pos (rQ(0) is running), rT, and all Queues' contents
 				System.out.println("\nSYSTEM OUTPUT BEGIN");
-				System.out.println("+------+-------+-----+-----+----+");
-				System.out.format("| %4s | %6s | %2s | \n", "Job", StringUtils.center("Pos", 6), "rT");
-				System.out.println("+------+-------+-----+-----+----+");
+				System.out.println("+------+--------+----+");
+				System.out.format("| %4s | %6s | %2s | \n", StringUtils.center("Job",4), StringUtils.center("Pos", 6), "rT");
+				System.out.println("+------+--------+----+");
 				for(Job j : sys.getAllJobs()) {
 					if(findJob(j,sys).equals("rQ(0)"))
 						tempPos = "R";
 					else
 						tempPos = findJob(j,sys);
-					System.out.format("| %4s | %6s | %2s | \n", "Job", "J"+j.getJobNum(),tempPos,j.getrT());
+					System.out.format("| %4s | %6s | %2s | \n", StringUtils.center("J"+j.getJobNum(),4),StringUtils.center(tempPos,6),j.getrT());
+					System.out.println("+------+--------+----+");
 				}
 				System.out.println("hQ1:" + printQueue(sys.gethSJF()) + " hQ2:" + printQueue(sys.gethFIFO()) + " rQ:" + printQueue(sys.getrQueue()) + " wQ:" + printQueue(sys.getwQueue()) + " cQ:" + printQueue(sys.getcQueue()));
 				System.out.println("END SYSTEM OUTPUT \n");

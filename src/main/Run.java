@@ -34,10 +34,7 @@ public class Run {
 		// Step 3: Loop until all jobs have completed
 		int currentLine = 0;
 		Job j = new Job();
-		while (!sys.isComplete()/*
-								 * && sys.getCurrTime() <
-								 * j.getNextJobTime(currentLine+1, fi)
-								 */) {
+		while (!sys.isComplete()) {
 
 			// If time == arrival of next line pause and initialize job
 			if (j.getNextJobTime(currentLine + 1, fi) == sys.getCurrTime()) {
@@ -49,20 +46,7 @@ public class Run {
 			if (!sys.getAllJobs().isEmpty())
 				j.runJob(sys);
 
-			/*try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}*/
 			sys.incCurrTime();
-
-			/*if (j.getNextJobType(currentLine + 1, fi).equals("D")
-					&& j.getNextJobTime(currentLine + 1, fi) <= sys.getCurrTime() && sys.gethSJF().isEmpty()
-					&& sys.gethFIFO().isEmpty() && sys.getwQueue().isEmpty() && sys.getrQueue().isEmpty()) {
-				System.out.println(sys.getCurrTime());
-				sys.setComplete(true);
-			}*/
 		}
-		System.out.println("System has completed all jobs.");
 	}
 }
