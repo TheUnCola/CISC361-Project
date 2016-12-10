@@ -42,11 +42,6 @@ public class Job {
 	}
 
 	public void runJob(Sys sys) {
-		//req while running
-			//wQ if not enough aDev
-			//interrupt Qt, push to end rQ
-			//if not running, drop req
-		
 		boolean iterateQueue = true;
 		//We want to iterate through the queues because more than 1 job can be moved at once
 		while(iterateQueue) {
@@ -105,7 +100,6 @@ public class Job {
 		//If nothing in Ready Queue, continue on loop until something is or done
 		if(sys.getrQueue().isEmpty()) return;
 		
-		//---------------- DOUBLE CHECK THIS AREA OF CODE (IF'S OR ELSE IF'S) ----------------//
 		Job runningJob = sys.getrQueue().getFirst();
 		if (sys.getqCount() >= sys.getqTime()) {
 			// Rotate jobs (Round Robin)
@@ -143,7 +137,6 @@ public class Job {
 			runningJob.setTimeComplete(sys.getCurrTime()+1);
 			printOutput("C" + runningJob.getJobNum(), (sys.getCurrTime()+1)+"", runningJob.getNumDev(), runningJob.getMem(), runningJob.getrT(), "cQ(" + (sys.getcQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
 		}
-		// --------------------------- END CHECK --------------------------- //
 	}
 
 	public void initNextJob(Sys sys, FileInput fi, int currentLine) {
@@ -233,7 +226,6 @@ public class Job {
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
 							"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
 				}
-				//Double check in this part for avoiding errors
 			}
 			break;
 		// Release of devices
