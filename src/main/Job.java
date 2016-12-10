@@ -13,6 +13,7 @@ public class Job {
 	private int mem;
 	private int rT;
 	private int numDev;
+	private int timeComplete;
 	private boolean isRunning;
 
 	public Job(int timeArrive, int jobNum, int mem, int numDev, int rT, int priority) {
@@ -23,6 +24,7 @@ public class Job {
 		this.rT = rT;
 		this.numDev = numDev;
 		this.isRunning = false;
+		this.setTimeComplete(0);
 	}
 
 	public Job() {
@@ -40,64 +42,70 @@ public class Job {
 	}
 
 	public void runJob(Sys sys) {
-		// Check Wait Queue and remove entry if enough aDev
-		if (!sys.getwQueue().isEmpty() && sys.getwQueue().getFirst().getNumDev() <= sys.getaDev()) {
-			sys.getrQueue().addLast(sys.getwQueue().getFirst());
-			sys.decaDev(sys.getwQueue().getFirst().getNumDev());
-			printOutput("M" + sys.getwQueue().getFirst().getJobNum(), sys.getCurrTime()+"", sys.getwQueue().getFirst().getNumDev(), sys.getwQueue().getFirst().getMem(),
-					sys.getwQueue().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys); 
-			sys.getwQueue().removeFirst();
-		}
-
-		// Check Hold Queues and add to Ready Queues if possible
-		if (!sys.gethSJF().isEmpty()) {
-			if (sys.gethSJF().getFirst().getMem() <= sys.getaMem()
-					&& sys.gethSJF().getFirst().getNumDev() <= sys.getaDev()) {
-				// Add first position of Hold Queue to ready queue
-				sys.getrQueue().addLast(sys.gethSJF().getFirst());
-				// Decrease available memory and devices
-				sys.decaDev(sys.gethSJF().getFirst().getNumDev());
-				sys.decaMem(sys.gethSJF().getFirst().getMem());
-				printOutput("M" + sys.gethSJF().getFirst().getJobNum(), sys.getCurrTime()+"",
-						sys.gethSJF().getFirst().getNumDev(), sys.gethSJF().getFirst().getMem(),
-						sys.gethSJF().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
-						sys.getaDev(), "-", sys);
-				// Remove from Hold Queue
-				sys.gethSJF().removeFirst();
-			}
-		} else if (!sys.gethFIFO().isEmpty()) {
-			if (sys.gethFIFO().getFirst().getMem() <= sys.getaMem()
-					&& sys.gethFIFO().getFirst().getNumDev() <= sys.getaDev()) {
-				// Add first position of Hold Queue to ready queue
-				sys.getrQueue().addLast(sys.gethFIFO().getFirst());
-				// Decrease available memory and devices
-				sys.decaDev(sys.gethFIFO().getFirst().getNumDev());
-				sys.decaMem(sys.gethFIFO().getFirst().getMem());
-				printOutput("M" + sys.gethFIFO().getFirst().getJobNum(), sys.getCurrTime()+"",
-						sys.gethFIFO().getFirst().getNumDev(), sys.gethFIFO().getFirst().getMem(),
-						sys.gethFIFO().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
-						sys.getaDev(), "-", sys);
-				// Remove from Hold Queue
-				sys.gethFIFO().removeFirst();
-			}
-		}
+		//req while running
+			//wQ if not enough aDev
+			//interrupt Qt, push to end rQ
+			//if not running, drop req
 		
-		/*if (!sys.gethSJF().isEmpty())
-			System.out.println("hQ1(0) = J" + sys.gethSJF().getFirst().getJobNum() + " dev="
-					+ sys.gethSJF().getFirst().getNumDev());
-		if (!sys.gethFIFO().isEmpty())
-			System.out.println("hQ2(0) = J" + sys.gethFIFO().getFirst().getJobNum() + " dev="
-					+ sys.gethFIFO().getFirst().getNumDev());
-		if (!sys.getrQueue().isEmpty())
-			System.out.println("rQ(0) = J" + sys.getrQueue().getFirst().getJobNum() + " dev="
-					+ sys.getrQueue().getFirst().getNumDev());
-		if (!sys.getwQueue().isEmpty())
-			System.out.println("wQ(0) = J" + sys.getwQueue().getFirst().getJobNum() + " dev="
-					+ sys.getwQueue().getFirst().getNumDev());*/
+		boolean iterateQueue = true;
+		//We want to iterate through the queues because more than 1 job can be moved at once
+		while(iterateQueue) {
+			// Check Wait Queue and remove entry if enough aDev
+			if (!sys.getwQueue().isEmpty()) {
+				if(sys.getwQueue().getFirst().getNumDev() <= sys.getaDev()) {
+					sys.getrQueue().addLast(sys.getwQueue().getFirst());
+					sys.decaDev(sys.getwQueue().getFirst().getNumDev());
+					printOutput("M" + sys.getwQueue().getFirst().getJobNum(), sys.getCurrTime()+"", sys.getwQueue().getFirst().getNumDev(), sys.getwQueue().getFirst().getMem(),
+							sys.getwQueue().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys); 
+					sys.getwQueue().removeFirst();
+				} else {
+					iterateQueue = false;
+				}
+			}
+			// Check Hold Queues and add to Ready Queues if possible
+			else if (!sys.gethSJF().isEmpty()) {
+				if (sys.gethSJF().getFirst().getMem() <= sys.getaMem()
+						&& sys.gethSJF().getFirst().getNumDev() <= sys.getaDev()) {
+					// Add first position of Hold Queue to ready queue
+					sys.getrQueue().addLast(sys.gethSJF().getFirst());
+					// Decrease available memory and devices
+					sys.decaDev(sys.gethSJF().getFirst().getNumDev());
+					sys.decaMem(sys.gethSJF().getFirst().getMem());
+					printOutput("M" + sys.gethSJF().getFirst().getJobNum(), sys.getCurrTime()+"",
+							sys.gethSJF().getFirst().getNumDev(), sys.gethSJF().getFirst().getMem(),
+							sys.gethSJF().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
+							sys.getaDev(), "-", sys);
+					// Remove from Hold Queue
+					sys.gethSJF().removeFirst();
+				} else {
+					iterateQueue = false;
+				}
+			} else if (!sys.gethFIFO().isEmpty()) {
+				if (sys.gethFIFO().getFirst().getMem() <= sys.getaMem()
+						&& sys.gethFIFO().getFirst().getNumDev() <= sys.getaDev()) {
+					// Add first position of Hold Queue to ready queue
+					sys.getrQueue().addLast(sys.gethFIFO().getFirst());
+					// Decrease available memory and devices
+					sys.decaDev(sys.gethFIFO().getFirst().getNumDev());
+					sys.decaMem(sys.gethFIFO().getFirst().getMem());
+					printOutput("M" + sys.gethFIFO().getFirst().getJobNum(), sys.getCurrTime()+"",
+							sys.gethFIFO().getFirst().getNumDev(), sys.gethFIFO().getFirst().getMem(),
+							sys.gethFIFO().getFirst().getrT(), "rQ(" + (sys.getrQueue().size() - 1) + ")", sys.getaMem(),
+							sys.getaDev(), "-", sys);
+					// Remove from Hold Queue
+					sys.gethFIFO().removeFirst();
+				} else {
+					iterateQueue = false;
+				}
+			} else {
+				iterateQueue = false;
+			}
+		}
 
 		//If nothing in Ready Queue, continue on loop until something is or done
 		if(sys.getrQueue().isEmpty()) return;
 		
+		//---------------- DOUBLE CHECK THIS AREA OF CODE (IF'S OR ELSE IF'S) ----------------//
 		Job runningJob = sys.getrQueue().getFirst();
 		if (sys.getqCount() >= sys.getqTime()) {
 			// Rotate jobs (Round Robin)
@@ -132,8 +140,10 @@ public class Job {
 			sys.resetqCount();
 			// Remove from ready queue
 			sys.getrQueue().removeFirst();
-			printOutput("M" + runningJob.getJobNum(), sys.getCurrTime()+"", runningJob.getNumDev(), runningJob.getMem(), runningJob.getrT(), "cQ(" + (sys.getcQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
+			runningJob.setTimeComplete(sys.getCurrTime()+1);
+			printOutput("C" + runningJob.getJobNum(), (sys.getCurrTime()+1)+"", runningJob.getNumDev(), runningJob.getMem(), runningJob.getrT(), "cQ(" + (sys.getcQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
 		}
+		// --------------------------- END CHECK --------------------------- //
 	}
 
 	public void initNextJob(Sys sys, FileInput fi, int currentLine) {
@@ -188,45 +198,27 @@ public class Job {
 				// Reject request since there aren't enough total devices
 				printOutput("R" + tempJobNum, sys.getCurrTime()+"", tempDev,
 						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-						"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
+						"-", sys.getaMem(), sys.getaDev(), "-", sys);
 				System.out.println("There aren't enough total devices on the system to support this request.");
-			} else if (sys.gethSJF().contains(sys.getAllJobs().get(tempJobNum - 1))
+			} else if ((!sys.getrQueue().isEmpty() && !sys.getrQueue().getFirst().equals(sys.getAllJobs().get(tempJobNum - 1))) || sys.gethSJF().contains(sys.getAllJobs().get(tempJobNum - 1))
 					|| sys.gethFIFO().contains(sys.getAllJobs().get(tempJobNum - 1))) {
-				// Increase required # of devices for that job
-				sys.getAllJobs().get(tempJobNum - 1).incNumDev(tempDev);
-				// Find where job is and what position for printing
-				if (sys.gethSJF().contains(sys.getAllJobs().get(tempJobNum - 1))) {
-					int i = 0;
-					for (Job j : sys.gethSJF()) {
-						if (j.equals(sys.getAllJobs().get(tempJobNum - 1)))
-							tempPos = "hQ1(" + i + ")";
-						i++;
-					}
-				} else {
-					int i = 0;
-					for (Job j : sys.gethFIFO()) {
-						if (j.equals(sys.getAllJobs().get(tempJobNum - 1)))
-							tempPos = "hQ2(" + i + ")";
-						i++;
-					}
-				}
-				printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
+				// Reject request since job isn't running
+				printOutput("R" + tempJobNum, sys.getCurrTime()+"", tempDev,
 						sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-						tempPos, sys.getaMem(), sys.getaDev(), "-", sys);
-			} else if (sys.getrQueue().contains(sys.getAllJobs().get(tempJobNum - 1))) {
+						"-", sys.getaMem(), sys.getaDev(), "-", sys);
+				System.out.println("The job isn't running so this request is rejected.");
+			} else if (sys.getrQueue().getFirst().equals(sys.getAllJobs().get(tempJobNum - 1))) {
 				// Remove devices from system if available or put job in wait queue
 				if (tempDev <= sys.getaDev()) {
 					sys.decaDev(tempDev);
 					sys.getAllJobs().get(tempJobNum - 1).incNumDev(tempDev);
-					int i = 0;
-					for (Job j : sys.getrQueue()) {
-						if (j.equals(sys.getAllJobs().get(tempJobNum - 1)))
-							tempPos = "rQ(" + i + ")";
-						i++;
-					}
+					// Moving to end of Ready Queue and reseting Quantum
+					sys.getrQueue().addLast(sys.getAllJobs().get(tempJobNum - 1)); // Add to back
+					sys.getrQueue().removeFirst(); // Remove from front
+					sys.resetqCount();
 					printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
-							tempPos, sys.getaMem(), sys.getaDev(), "-", sys);
+							"rQ("+(sys.getrQueue().size()-1)+")", sys.getaMem(), sys.getaDev(), "-", sys);
 				} else if(sys.getAllJobs().get(tempJobNum - 1).getNumDev() + tempDev <= sys.getNumDev()) {
 					// Add back mem/dev before increasing job amount
 					sys.incaDev(sys.getAllJobs().get(tempJobNum - 1).getNumDev());
@@ -235,6 +227,8 @@ public class Job {
 					sys.getAllJobs().get(tempJobNum - 1).incNumDev(tempDev);
 					sys.getwQueue().addLast(sys.getAllJobs().get(tempJobNum - 1));
 					sys.getrQueue().remove(sys.getAllJobs().get(tempJobNum - 1));
+					//Reset Quantum so next Job can start back at 0
+					sys.resetqCount();
 					printOutput("R" + tempJobNum, sys.getCurrTime() + "", tempDev,
 							sys.getAllJobs().get(tempJobNum - 1).getMem(), sys.getAllJobs().get(tempJobNum - 1).getrT(),
 							"wQ(" + (sys.getwQueue().size() - 1) + ")", sys.getaMem(), sys.getaDev(), "-", sys);
@@ -286,13 +280,48 @@ public class Job {
 			}
 			break;
 		case "D":
-			for(Job j : sys.getAllJobs()) {
-				System.out.println("J" + j.getJobNum() + " " + findJob(j, sys));
+			//End Execution at time 9999 regardless of Job states
+			if(sys.getCurrTime() == 9999) {
+				System.out.println("\nSystem has reached its end state");
+				System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
+				System.out.format("| %4s | %6s | %2s | %3s | %3s | \n", "Job", StringUtils.center("Pos", 6), "rT",
+						"TT", "WTT");
+				System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
+				for(Job j : sys.getAllJobs()) {
+					if(findJob(j,sys).equals("rQ(0)"))
+						tempPos = "R";
+					else
+						tempPos = findJob(j,sys);
+					int tempWTT = (j.getTimeComplete()-j.getTimeArrive());
+					if(j.getrT() > 0)
+						tempWTT = (j.getTimeComplete()-j.getTimeArrive())/j.getrT();
+					System.out.format("| %4s | %6s | %2s | %3s | %3s | \n", "Job", "J"+j.getJobNum(),tempPos,j.getrT(),j.getTimeComplete()-j.getTimeArrive(),tempWTT);
+				}
+				sys.setComplete(true);
+			} else {
+				//Prints Jobs, Pos (rQ(0) is running), rT, and all Queues' contents
+				System.out.println("\nSYSTEM OUTPUT BEGIN");
+				System.out.println("+------+-------+-----+-----+----+");
+				System.out.format("| %4s | %6s | %2s | \n", "Job", StringUtils.center("Pos", 6), "rT");
+				System.out.println("+------+-------+-----+-----+----+");
+				for(Job j : sys.getAllJobs()) {
+					if(findJob(j,sys).equals("rQ(0)"))
+						tempPos = "R";
+					else
+						tempPos = findJob(j,sys);
+					System.out.format("| %4s | %6s | %2s | \n", "Job", "J"+j.getJobNum(),tempPos,j.getrT());
+				}
+				System.out.println("hQ1:" + printQueue(sys.gethSJF()) + " hQ2:" + printQueue(sys.gethFIFO()) + " rQ:" + printQueue(sys.getrQueue()) + " wQ:" + printQueue(sys.getwQueue()) + " cQ:" + printQueue(sys.getcQueue()));
+				System.out.println("END SYSTEM OUTPUT \n");
+				//Print header for table again
+				System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
+				System.out.format("| %4s | %5s | %1s | %3s | %2s | %6s | %4s | %4s | %2s | \n", "Job", "Time", "Dev", "Mem",
+						"rT", StringUtils.center("Pos", 6), "aMem", "aDev", "Qt");
+				System.out.println("+------+-------+-----+-----+----+--------+------+------+----+");
 			}
-			sys.setComplete(true);
 			break;
 		default:
-			System.out.println("Error.");
+			System.out.println("Unrecognizable Input Code.");
 			break;
 		}
 	}
@@ -400,5 +429,13 @@ public class Job {
 
 	public void decrT() {
 		this.rT--;
+	}
+
+	public int getTimeComplete() {
+		return timeComplete;
+	}
+
+	public void setTimeComplete(int timeComplete) {
+		this.timeComplete = timeComplete;
 	}
 }
